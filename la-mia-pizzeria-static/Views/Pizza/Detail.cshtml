@@ -1,0 +1,18 @@
+﻿@model Pizza
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dettagli Pizza</title>
+</head>
+<body>
+    <h1>Dettagli Pizza @Model.Nome</h1>
+    <div class="row">
+        <div class="col-4">
+            <h2>@Model.Nome</h2>
+            <img src="@Model.Immagine" alt="@Model.Nome" />
+            <p>@Model.Prezzo</p>
+        </div>
+    </div>
+</body>
+</html>

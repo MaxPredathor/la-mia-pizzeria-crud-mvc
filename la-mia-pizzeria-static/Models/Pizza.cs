@@ -7,6 +7,9 @@
         public string Immagine { get; set; }
         public float Prezzo { get; set; }
 
+        public Pizza()
+        {
+        }
         public Pizza(string name,  string descrizione, string image, float price)
         {
             Nome = name;
