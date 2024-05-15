@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = null;
+}
+
+@{
+    // SNACK 1
+    string Nome = "Massimiliano";
+    string Cognome = "Gilli";
+    //SNACK 2
+    int SommaParametri(int n)
+    {
+        int Somma = 0;
+        if (n <= 0)
+            return 0;
+        else
+        {
+            for(var i = 1; i <= n; i++)
+            {
+                Somma += i;
+            }
+            return Somma;
+        }
+    }
+    //SNACK 3
+    string Frase = "nel mezzo del cammin di nostra vita";
+    string FraseSenzaSpazi = Frase.Replace(" ", "");
+    char LetteraDaContare = 'a';
+    int Counter = 0;
+    foreach(char carattere in FraseSenzaSpazi)
+    {
+        if (carattere == LetteraDaContare)
+            Counter++;
+    }
+    //SNACK 4
+    List<int> Lista = new List<int>();
+    Random rnd = new Random();
+    int Valore;
+    for(var i = 1; i <= 20; i++)
+    {
+        Valore = rnd.Next(0, 91);
+        Lista.Add(Valore);
+    }
+    //SNACK 5
+    DateTime Ora = DateTime.Now;
+    string OraConSecondi = Ora.ToString("yyyy-MM-dd HH:mm:ss");
+    //SNACK 6.a
+    DateTime SetteGiorniFa = Ora.AddDays(-7);
+    //SNACK 6.b
+    string Giorno = Ora.ToString("dddd");
+    //SNACK 6.c
+    DateTime TraUnAnno = Ora.AddYears(1);
+    string GiornoTraUnAnno = TraUnAnno.ToString("dddd");
+}
+
+<div class="text-center">
+    <h2 class="display-4">@Nome - @Cognome</h2>
+    <span>La somma dei numeri tra 1 e 5 e': @SommaParametri(5)</span> <br />
+    <span>La lettera "@LetteraDaContare" compare @Counter volte nella frase "@Frase"</span>
+    <div>
+        Valori nella Lista che soddisfano i requisiti:
+        @{
+            foreach(int numero in Lista)
+            {
+                if(numero >= 20 && numero <= 90)
+                {
+                    <div>@numero</div>
+                }
+            }
+        }
+    </div>
+    <span>Orario e Data odierna: @OraConSecondi</span> <br />
+    <span>Sette giorni fa era il: @SetteGiorniFa</span> <br />
+    <span>Oggi e' il giorno @Giorno</span> <br />
+    <span>Tra un anno sara' il giorno @GiornoTraUnAnno</span>
+</div>
+
+
