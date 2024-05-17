@@ -15,6 +15,7 @@ namespace la_mia_pizzeria_static.Models
         public string Nome { get; set; }
         [Required(ErrorMessage = "La descrizione è obbligatoria.")]
         [StringLength(250, ErrorMessage = "La descrizione non può superare i 250 caratteri.")]
+        [MinWords(5, ErrorMessage = "La Descrizione deve avre un minimo di 5 parole.")]
         public string Descrizione { get; set; }
         [Required(ErrorMessage = "L'immagine è obbligatoria.")]
         [Url(ErrorMessage = "Il link dell'immagine deve essere un URL valido.")]
@@ -57,6 +58,30 @@ namespace la_mia_pizzeria_static.Models
                     new Pizza { Id = 11, Nome = "Carbonara", Descrizione = "Panna, mozzarella, pancetta, uova", Immagine = "https://www.vincenzosplate.com/wp-content/uploads/2022/10/1500x1500-Photo-4_1951-How-to-Make-CARBONARA-PIZZA-Like-an-Italian-V1.jpg", Prezzo = 8.99f },
                     new Pizza { Id = 12, Nome = "Salsiccia e Friarielli", Descrizione = "Pomodoro, mozzarella, salsiccia, friarielli", Immagine = "https://scattidigusto.b-cdn.net/wp-content/uploads/2017/11/pizza-salsiccia-friarielli-migliore-Napoli.jpg", Prezzo = 8.49f }
                     );
+            }
+        }
+        public class MinWordsAttribute : ValidationAttribute
+        {
+            private readonly int _minWords;
+
+            public MinWordsAttribute(int minWords)
+            {
+                _minWords = minWords;
+            }
+
+            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            {
+                if (value != null)
+                {
+                    var stringValue = value.ToString();
+                    if (stringValue.Split(' ').Where(s => s.Length > 0).Count() < _minWords)
+                    {
+                        return new ValidationResult(ErrorMessage);
+                    }
+
+                    
+                }
+                return ValidationResult.Success;
             }
         }
     }
