@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Create";
+    Layout = "_Pizzeria";
+}
+@model Pizza
+
+<div class="container">
+    <form asp-controller="Pizza" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <strong>Nome:</strong>
+            <input asp-for="Nome" class="d-block w-100" />
+            <span asp-validation-for="Nome" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <strong>Descrizione:</strong>
+            <input asp-for="Descrizione" class="d-block w-100" />
+            <span asp-validation-for="Descrizione" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <strong>Immagine (Link):</strong>
+            <input asp-for="Immagine" class="d-block w-100" />
+            <span asp-validation-for="Immagine" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <strong>Prezzo:</strong>
+            <input asp-for="Prezzo" class="d-block w-100" />
+            <span asp-validation-for="Prezzo" class="text-danger"></span>
+        </div>
+        <div class="text-end">
+            <input type="submit" class="btn btn-small btn-info" value="Salva">
+        </div>
+    </form>
+</div>
