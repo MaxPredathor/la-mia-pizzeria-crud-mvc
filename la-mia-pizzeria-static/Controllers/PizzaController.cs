@@ -1,5 +1,4 @@
-﻿using la_mia_pizzeria_static.Migrations;
-using la_mia_pizzeria_static.Models;
+﻿using la_mia_pizzeria_static.Models;
 using Microsoft.AspNetCore.Mvc;
 using static la_mia_pizzeria_static.Models.Pizza;
 
@@ -27,24 +26,34 @@ namespace la_mia_pizzeria_static.Controllers
             return View(pizza);
         }
 
+        // Funzione che prende tutte le categorie dal DB
+        public List<Categoria> GetAllCategories()
+        {
+            return _context.Categoria.ToList();
+        }
+
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            PizzaFormModel model = new PizzaFormModel();
+            model.Pizza = new Pizza();
+            model.Categorie = GetAllCategories();
+            return View(model);
         }     
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Pizza data)
+        public IActionResult Create(PizzaFormModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Pizza.Add(data);
+                _context.Pizza.Add(model.Pizza);
                 _context.SaveChanges();
                 return RedirectToAction("Index");               
             }
             {
-                return View(data);
+                model.Categorie = GetAllCategories();
+                return View(model);
             }
         }
         [HttpGet]
@@ -52,22 +61,29 @@ namespace la_mia_pizzeria_static.Controllers
         {
             Pizza pizza = _context.Pizza.Find(id);
             if (pizza == null)
-            { 
-                return NotFound(); 
+            {
+                return NotFound();
             }
-            return View(pizza);
+            PizzaFormModel model = new PizzaFormModel
+            {
+                Pizza = pizza,
+                Categorie = GetAllCategories()
+            };
+
+            return View(model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Pizza data)
+        public IActionResult Edit(PizzaFormModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                _context.Pizza.Update(data);
+                _context.Update(model.Pizza);
                 _context.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
-            return View(data);
+            model.Categorie = GetAllCategories();
+            return View(model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
