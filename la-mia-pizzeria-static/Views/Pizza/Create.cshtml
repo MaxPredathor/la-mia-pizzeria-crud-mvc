@@ -38,7 +38,16 @@
                     <option value="@categoria.Id">@categoria.Nome</option>
                 }
             </select>
-            <span asp-validation-for="Pizza.CategoriaId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <strong>Ingredienti:</strong>
+            @foreach (var ingrediente in Model.Ingredienti)
+            {
+                <div>
+                    <input type="checkbox" asp-for="SelectedIngredienti" value="@ingrediente.Id" />
+                    <label>@ingrediente.Nome</label>
+                </div>
+            }
         </div>
         <div class="text-end">
             <input type="submit" class="btn btn-small btn-info" value="Salva">

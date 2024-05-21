@@ -1,5 +1,6 @@
 ﻿using la_mia_pizzeria_static.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using static la_mia_pizzeria_static.Models.Pizza;
 
 namespace la_mia_pizzeria_static.Controllers
@@ -11,6 +12,20 @@ namespace la_mia_pizzeria_static.Controllers
         {
             this._context = context;
         }
+
+        // Funzione che prende tutte le categorie dal DB
+
+        public List<Categoria> GetAllCategories()
+        {
+            return _context.Categoria.ToList();
+        }
+        // Funzione che prende tutti gli ingredienti dal DB
+
+        public List<Ingrediente> GetAllIngredienti()
+        {
+            return _context.Ingrediente.ToList();
+        }
+
         public IActionResult Index()
         {        
             var pizza = _context.Pizza.ToList();
@@ -26,18 +41,13 @@ namespace la_mia_pizzeria_static.Controllers
             return View(pizza);
         }
 
-        // Funzione che prende tutte le categorie dal DB
-        public List<Categoria> GetAllCategories()
-        {
-            return _context.Categoria.ToList();
-        }
-
         [HttpGet]
         public IActionResult Create()
         {
             PizzaFormModel model = new PizzaFormModel();
             model.Pizza = new Pizza();
             model.Categorie = GetAllCategories();
+            model.Ingredienti = GetAllIngredienti();
             return View(model);
         }     
 
@@ -49,25 +59,42 @@ namespace la_mia_pizzeria_static.Controllers
             {
                 _context.Pizza.Add(model.Pizza);
                 _context.SaveChanges();
-                return RedirectToAction("Index");               
+
+                foreach (var ingredienteId in model.SelectedIngredienti)
+                {
+                    _context.PizzaIngrediente.Add(new PizzaIngrediente
+                    {
+                        PizzaId = model.Pizza.Id,
+                        IngredienteId = ingredienteId
+                    });
+                }
+
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
             }
-            {
-                model.Categorie = GetAllCategories();
-                return View(model);
-            }
+
+            model.Categorie = GetAllCategories();
+            model.Ingredienti = GetAllIngredienti();
+            return View(model);
         }
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            Pizza pizza = _context.Pizza.Find(id);
+            Pizza pizza = _context.Pizza
+                .Include(p => p.PizzaIngredienti)
+                .FirstOrDefault(p => p.Id == id);
+
             if (pizza == null)
             {
                 return NotFound();
             }
+
             PizzaFormModel model = new PizzaFormModel
             {
                 Pizza = pizza,
-                Categorie = GetAllCategories()
+                Categorie = GetAllCategories(),
+                Ingredienti = GetAllIngredienti(),
+                SelectedIngredienti = pizza.PizzaIngredienti.Select(pi => pi.IngredienteId).ToList()
             };
 
             return View(model);
@@ -80,9 +107,29 @@ namespace la_mia_pizzeria_static.Controllers
             {
                 _context.Update(model.Pizza);
                 _context.SaveChanges();
+
+                var existingIngredients = _context.PizzaIngrediente
+                    .Where(pi => pi.PizzaId == model.Pizza.Id)
+                    .ToList();
+
+                _context.PizzaIngrediente.RemoveRange(existingIngredients);
+                _context.SaveChanges();
+
+                foreach (var ingredienteId in model.SelectedIngredienti)
+                {
+                    _context.PizzaIngrediente.Add(new PizzaIngrediente
+                    {
+                        PizzaId = model.Pizza.Id,
+                        IngredienteId = ingredienteId
+                    });
+                }
+
+                _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
+
             model.Categorie = GetAllCategories();
+            model.Ingredienti = GetAllIngredienti();
             return View(model);
         }
         [HttpPost]

@@ -35,6 +35,7 @@ namespace la_mia_pizzeria_static.Models
         public float Prezzo { get; set; }
         public int? CategoriaId { get; set; }
         public Categoria Categoria { get; set; }
+        public List<PizzaIngrediente> PizzaIngredienti { get; set; } = new List<PizzaIngrediente>();
 
         public Pizza()
         {
@@ -50,6 +51,8 @@ namespace la_mia_pizzeria_static.Models
         {
             public DbSet<Pizza> Pizza { get; set; }
             public DbSet<Categoria> Categoria { get; set; }
+            public DbSet<Ingrediente> Ingrediente { get; set; }
+            public DbSet<PizzaIngrediente> PizzaIngrediente { get; set; }
 
 
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -58,6 +61,18 @@ namespace la_mia_pizzeria_static.Models
             }
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
+                modelBuilder.Entity<PizzaIngrediente>().HasKey(pi => new { pi.PizzaId, pi.IngredienteId });
+
+                modelBuilder.Entity<PizzaIngrediente>()
+                    .HasOne(pi => pi.Pizza)
+                    .WithMany(p => p.PizzaIngredienti)
+                    .HasForeignKey(pi => pi.PizzaId);
+
+                modelBuilder.Entity<PizzaIngrediente>()
+                    .HasOne(pi => pi.Ingrediente)
+                    .WithMany(i => i.PizzaIngredienti)
+                    .HasForeignKey(pi => pi.IngredienteId);
+
                 modelBuilder.Entity<Categoria>().HasData(
                     new Categoria { Id = 1, Nome = "Pizze classiche" },
                     new Categoria { Id = 2, Nome = "Pizze bianche" },
